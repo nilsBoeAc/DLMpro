@@ -1,0 +1,247 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+<title>Description of DLMpro</title>
+<meta name="keywords" content="DLMpro">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="generator" content="m2docgen &copy 2021: Nils Boehnisch">
+<meta name="robots" content="index, follow">
+<link type="text/css" rel="stylesheet" href="ressources\m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+
+<div><a class = "image" href="DLMPro"><img border="0" src="ressources\logo.jpg"></a></div>
+
+<!-- START Description / important comment -->
+<h2><a name="_description"></a>Description <a href="#_top"></a></h2><hr  class="btw">
+<div class="fragment"><pre class="text">   This class set up a Doublet-Lattice-Model for a given Wing
+   Several Methods are provided for calculating the Aerodyanmic
+   Influence Coefficients
+
+   Constructor:
+       self = DLMPro(Span,Chord,NS,NC,Sweep,Dihedral,TR)
+
+   Methods:
+       res = self.calcAIC(kVect,machVect)
+
+   This Tool will be updated continualy with further modules. (e.g. to
+   visualize the results, etc.)
+
+
+   For more detailed Information on methods see Documentation 
+       -> "supplemental Software"
+</pres></div>
+<!-- END Description / important comment -->
+<!-- START Info for Output / important comment -->
+<h2><a name="_description"></a>Info for Output <a href="#_top"></a></h2><hr  class="btw">
+<div class="fragment"><pre class="text">   The created object contains a property ("resultOverview"). This
+   gives an short overview of the conducted analyses. Since several
+   method are available, by reanalysing the AIC, a new result
+   structure will be created. This allows to compare different
+   calculated AIC for the same configuration.
+
+   Output Coordinate Systems:
+       Qkk - in aero       Coordinate System 
+       Qss - in structural Coordinate System (after Transformation with "CSChange")
+</pres></div>
+<!-- END Info for Output / important comment -->
+<!-- START References / important comment -->
+<h2><a name="_description"></a>References <a href="#_top"></a></h2><hr  class="btw">
+<div class="fragment"><pre class="text">   [1]     - Voß, A., “An Implementation ft he Vortex Lattice and the Doublet Lat-
+             tice Method", Institut für Aeroelastik, Deutsches Zentrum für Luft- und 
+             Raumfahrt, Göttingen, Oktober 2020. 
+   [2]     - Albano, E. und Rodden, W. P., “A Doublet Lattice Method For Calculat-
+             ing Lift Distributions on Oscillation Surfaces in Subsonic Flows," in AIAA 
+             6th Aerospace Sciences Meeting, New York, 1968. 
+   [3]     - Kotikalpudi, A., "Body Freedom Flutter (BFF) Doublet Lattice Method 
+             (DLM)," University of Minnesota Digital Conservancy, 09-Sep-2014. 
+             [Online]. Verfügbar: http://hdl.handle.net/11299/165566.
+   [4]     - Kotikalpudi, A., Pfifer, H., und Balas, G. J., "Unsteady Aerodynamics
+             Modeling for a Flexible Unmanned Air Vehicle," in AIAA Atmospheric
+             Flight Mechanics Conference, Dallas, Texas, 2015.
+</pres></div>
+<!-- END References / important comment -->
+<!-- START Examples / important comment -->
+<h2><a name="_description"></a>Examples <a href="#_top"></a></h2><hr  class="btw">
+<div class="fragment"><pre class="text">   Examples can be found in the "Example_Folder"
+</pres></div>
+<!-- END Examples / important comment -->
+<!-- START Disclaimer / important comment -->
+<h2><a name="_description"></a>Disclaimer <a href="#_top"></a></h2><hr  class="btw">
+<div class="fragment"><pre class="text">   Copyright (c) 2021 Nils Böhnisch, Marc Bangel.
+
+   This file is part of DLMPro.
+
+   DLMPro is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   any later version. Also see the file "License".</pres></div>
+<!-- END Disclaimer / important comment -->
+<!-- START CLASSMETHODS / important comment -->
+<h2><a name="_description"></a>Methods <a href="#_top"></a></h2><hr class="btw">
+<ul>
+<li><div class="classBlock">calcAIC</div></li>
+<li><div class="classBlock">createGeo</div></li>
+<li><div class="classBlock">createGeoT</div></li>
+<li><div class="classBlock">plotDeformedMesh</div></li>
+<li><div class="classBlock">plotPhaseLag</div></li>
+<li><div class="classBlock">plotPressCoeff</div></li>
+<!-- methods above / important comment -->
+</ul>
+<!-- END CLASSMETHODS / important comment -->
+<!-- START CLASSPROPERTIES / important comment -->
+<h2><a name="_description"></a>Properties <a href="#_top"></a></h2><hr class="btw">
+<ul>
+<li><div class="classBlock">version</div></li>
+<li><div class="classBlock">wingProp</div></li>
+<li><div class="classBlock">panelProp</div></li>
+<li><div class="classBlock">SYM</div></li>
+<li><div class="classBlock">geo</div></li>
+<li><div class="classBlock">cT</div></li>
+<li><div class="classBlock">resultArray</div></li>
+<li><div class="classBlock">resultOverview</div></li>
+<li><div class="classBlock">T_CS</div></li>
+<!-- properties above / important comment -->
+</ul>
+<!-- END CLASSPROPERTIES / important comment -->
+<!-- START Constructor / important comment -->
+<h2><a name="_description"></a>Constructor <a href="#_top"></a></h2><hr  class="btw">
+<div class="fragment"><pre class="text"><div class='functionKeyword'>function</div> self = DLMpro(Span,Chord,NS,NC,Sweep,Dihedral,TR,varargin)
+<div class="comment">% creates DLMpro Object</div>
+<div class="comment">%% Syntax</div>
+<div class="comment">%   obj = DLMPro(Span,Chord,NS,NC,Sweep,Dihedral,TR)</div>
+<div class="comment">%   obj = DLMPro(__,varargin)</div>
+<div class="comment">%</div>
+<div class="comment">%% Input</div>
+<div class="comment">%   Mandatory:</div>
+<div class="comment">%       Span        [double]    - Span of Wing</div>
+<div class="comment">%       Chord       [double]    - Chord of Wing @ Root</div>
+<div class="comment">%       NS          [double]    - Number of Panels in Span Directions</div>
+<div class="comment">%       NC          [double]    - Number of Panels in Chord Directions</div>
+<div class="comment">%       Sweep       [double]    - Sweep of Wing (Measured at LE) [in degree]</div>
+<div class="comment">%       Dihedral    [double]    - Dihedral of Wing [in degree]</div>
+<div class="comment">%       TR          [double]    - Taper Ratio of Wing</div>
+<div class="comment">%</div>
+<div class="comment">%   Optional (Name-Value Pair)</div>
+<div class="comment">%       shift       [double]    - absolut shift of cs [x,y,z]</div>
+<div class="comment">%       kVect       [double]    - Vector containing reduced Freq.</div>
+<div class="comment">%       MachVect    [double]    - Vector containing mach number</div>
+<div class="comment">%       GSA         [double]    - Transformation matrix between Structure and AeroGrid</div>
+<div class="comment">%       Integration [string]    - Integration method: choose between</div>
+<div class="comment">%                                   ["Parabolic" (default), "Quartic"]</div>
+<div class="comment">%       Approximation [string]  - Approximation method: choose between</div>
+<div class="comment">%                                   ["Watkins","Laschka"(default),"Desmarais"]</div>
+<div class="comment">%</div>
+<div class="comment">%       SYM         [boolean]   - is wing symmetric - boolean</div>
+<div class="comment">%       CSChange    [double]    - Euler Angle describing change of</div>
+<div class="comment">%                                 coordinate system between structural</div>
+<div class="comment">%                                 and aerodynamic [0,0,0]</div>
+<div class="comment">%                                 (default) - [in degrees]</div>
+<div class="comment">%% Disclaimer</div>
+<div class="comment">%   Copyright (c) 2021 Nils Böhnisch, Marc Bangel.</div>
+<div class="comment">%</div>
+<div class="comment">%   This file is part of DLMPro.</div>
+<div class="comment">%</div>
+<div class="comment">%   DLMPro is free software: you can redistribute it and/or modify</div>
+<div class="comment">%   it under the terms of the GNU General Public License as published by</div>
+<div class="comment">%   the Free Software Foundation, either version 3 of the License, or</div>
+<div class="comment">%   any later version. Also see the file "License".</div>
+
+<div class="comment">%% Add Path</div>
+<div class='functionKeyword'>if(</div>~exist('DLM.m','file')||~exist('VLM.m','file'))
+addpath('.\DLM')
+addpath('.\VLM')
+<div class='functionKeyword'>end</div>
+
+<div class="comment">%% Input Parser</div>
+p = inputParser;
+addOptional(p,'shift',[0,0,0]);
+addOptional(p,'kVect',[]);
+addOptional(p,'MachVect',0);
+addOptional(p,'GSA',[]);
+addOptional(p,'Integration',"Parabolic",@(s) any(strcmpi(s,["Parabolic","Quartic"])));
+addOptional(p,'Approximation',"Laschka",@(s) any(strcmpi(s,["Watkins","Laschka","Desmarais"])));
+addOptional(p,'SYM',1);
+addOptional(p,'CSChange',[])
+p.parse(varargin{:});
+
+shift    = p.Results.shift;
+kVect    = p.Results.kVect;
+machVect = p.Results.MachVect;
+gsa     = p.Results.GSA;
+int      = p.Results.Integration;
+app      = p.Results.Approximation;
+sym      = p.Results.SYM;
+ct       = p.Results.CSChange;
+
+<div class='functionKeyword'>if</div> isempty(ct)
+ct = [0,0,0];
+<div class='functionKeyword'>end</div>
+self.cT = ct;
+
+<div class="comment">%% Parameter definition</div>
+<div class="comment">% Create Wing Object</div>
+wg = Wing(shift(1),shift(2),shift(3));
+
+wg.Span = Span;         <div class="comment">% Wing Span</div>
+wg.Chord = Chord;       <div class="comment">% wing chord</div>
+wg.NS = NS;             <div class="comment">% Number of spanwise boxes</div>
+wg.NC = NC;             <div class="comment">% Number of chordwise boxes</div>
+wg.Sweep  = Sweep;      <div class="comment">% sweep in degrees</div>
+wg.Dihedral  = Dihedral;<div class="comment">% dihedral in degrees</div>
+wg.TR = TR;             <div class="comment">% Taper ratio</div>
+self.wingProp  = wg;    <div class="comment">% add object to DLMpro Object</div>
+
+<div class="comment">% check <div class='functionKeyword'>for</div> symmetry</div>
+<div class='functionKeyword'>if</div> sym == 1
+symPoints = wg.Symmetry; <div class="comment">% points of wing with symme<div class='functionKeyword'>try</div> are calculated</div>
+symNS = NS*2;            <div class="comment">% double the number of spanwise panel in case of symmetry</div>
+else
+symPoints = wg.Points;
+symNS = NS;
+<div class='functionKeyword'>end</div>
+
+self.wingProp  = wg;
+self.panelProp = Panel(symPoints, wg.NC, symNS);
+self.SYM = sym;
+self.createGeo;
+
+<div class="comment">% CalcAIC <div class='functionKeyword'>if</div> direct requested</div>
+<div class='functionKeyword'>if(</div>~isempty(kVect))
+self.calcAIC(kVect,machVect,int,app,gsa)
+<div class='functionKeyword'>end</div>         
+<div class='functionKeyword'>end</div></pres></div>
+<!-- END Constructor / important comment -->
+<!-- START TOTAL_CALL / important comment-->
+<h2><a name="_cross"></a>Function References<a href="#_top"></a></h2><hr class="btw">
+<!-- START NAME_CALL -->
+<pre class = "text">This function calls:</pre><ul>
+
+<li><a href="Panel.html" class="code" title="Go To Function">Panel</a></li>
+
+<li><a href="Wing.html" class="code" title="Go To Function">Wing</a></li>
+
+<li><a href="symmetry.html" class="code" title="Go To Function">symmetry</a></li>
+
+<li><a href="DLM.html" class="code" title="Go To Function">DLM</a></li>
+
+<li><a href="DerivationIntegrationMatrix.html" class="code" title="Go To Function">DerivationIntegrationMatrix</a></li>
+
+<li><a href="Kernel.html" class="code" title="Go To Function">Kernel</a></li>
+
+<li><a href="VLM.html" class="code" title="Go To Function">VLM</a></li>
+<!-- functRef above / important comment -->
+</ul>
+<!-- END NAME_CALL -->
+<!--{TOTAL_CALL} -->
+<!-- END TOTAL_CALL / important comment-->
+<!-- CONTENT_FROM_M2DOC -->
+<!-- the comment above and this one will be replaced by the actual content -->
+
+<hr class="last"> 
+<address>Generated on 14-Apr-2022 by <strong><a class = "image" href="DLMPro" title="Matlab Documentation">m2docgen</a></strong> &copy; 2022 </address>
+</body>
+</html>

@@ -1,0 +1,117 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+<title>Description of VLM</title>
+<meta name="keywords" content="VLM">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="generator" content="m2docgen &copy 2021: Nils Boehnisch">
+<meta name="robots" content="index, follow">
+<link type="text/css" rel="stylesheet" href="ressources\m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+
+<div><a class = "image" href="DLMPro"><img border="0" src="ressources\logo.jpg"></a></div>
+
+<h1>VLM </h1> <hr class="btw">
+<!-- START SHORT_DESC / important comment -->
+<div><pre class="firstDesc"> VLM calulates the steady influence of the AIC</pre></div>
+<!-- END SHORT_DESC / important comment -->
+<!-- START Description: / important comment -->
+<h2><a name="_description"></a>Description: <a href="#_top"></a></h2><hr  class="btw">
+<div class="fragment"><pre class="text">   The VLM calculates the steady part of the influence coefficient.
+   First, the Prandtl-Glauert-Transformation is applied by dividing the
+   x-coordinates of points with beta. This is used as correction of the compressibility
+   of air. In further progress several geometries are calculated to determine
+   the horseshoe vortex and its influence. D1 is the calulation for the bound
+   vortex, D2 and D3 are the calculations for the border vortices. Each of this
+   influences is weighted by a normalized normalvector for use with dihedral.
+   The influences are summed up. In order to the relation of the influence matrix
+   to pressure coefficients the influences have to be multiplied with panel
+   half-chord. 
+   </pres></div>
+<!-- END Description: / important comment -->
+<!-- START Syntax: / important comment -->
+<h2><a name="_description"></a>Syntax: <a href="#_top"></a></h2><hr  class="btw">
+<div class="fragment"><pre class="text">   Here are the syntax
+</pres></div>
+<!-- END Syntax: / important comment -->
+<!-- START Input: / important comment -->
+<h2><a name="_description"></a>Input: <a href="#_top"></a></h2><hr  class="btw">
+<div class="fragment"><pre class="text">   Required input variables:
+   Panel: Object of panel information
+   Mach: Mach number
+   
+   Optional input variables:
+   dsp: Flag for display status in command window
+
+   Name-Value-Pairs:
+   Variable Explanation:
+   beta: Prandtl-Glauert-Transformation
+   CP_b = Control point coordinates
+   D1_b and D5_b: border points of bound vortex line
+   N_y and N_z: normalized normal vectors in y- and z-direction
+   epsilon: value for recognition of other values as 0 to prevent singularities
+   r0: distance of border points
+   r1 and r2: distances from control point to border points
+   r1Xr2: crossproduct of r1 and r2
+   abs_r1Xr2: amount of vector r1Xr2
+   abs_r1: amount of vector r1
+   abs_r2: amount of vector r2
+   r0r1 and r0r2: scalar products of r0 to r1 and r2
+   D1: influences of bound vortex
+   D2 and D3: influences of border vortices
+   D: steady influence matrix related to circulation
+   F: Factor to relate influences to pressure coefficients
+</pres></div>
+<!-- END Input: / important comment -->
+<!-- START Output: / important comment -->
+<h2><a name="_description"></a>Output: <a href="#_top"></a></h2><hr  class="btw">
+<div class="fragment"><pre class="text">   D_vlm: Resulting steady influence matrix
+</pres></div>
+<!-- END Output: / important comment -->
+<!-- START References: / important comment -->
+<h2><a name="_description"></a>References: <a href="#_top"></a></h2><hr  class="btw">
+<div class="fragment"><pre class="text">   [Ref1]
+   [Ref2]
+</pres></div>
+<!-- END References: / important comment -->
+<!-- START Disclaimer: / important comment -->
+<h2><a name="_description"></a>Disclaimer: <a href="#_top"></a></h2><hr  class="btw">
+<div class="fragment"><pre class="text">
+ Last editor:  Marc Bangel
+ Last edit on: 22.12.2021
+ Code version: X.Y.Z
+</pres></div>
+<!-- END Disclaimer: / important comment -->
+<!-- START Disclaimer / important comment -->
+<h2><a name="_description"></a>Disclaimer <a href="#_top"></a></h2><hr  class="btw">
+<div class="fragment"><pre class="text">   Copyright (c) 2021 Nils Böhnisch, Marc Bangel.
+
+   This file is part of DLMPro.
+
+   DLMPro is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   any later version. Also see the file "License".</pres></div>
+<!-- END Disclaimer / important comment -->
+<!-- START TOTAL_CALL / important comment-->
+<h2><a name="_cross"></a>Function References<a href="#_top"></a></h2><hr class="btw">
+<!-- START NAME_CALL -->
+<pre class = "text">This function calls:</pre><ul>
+
+<li><a href="Panel.html" class="code" title="Go To Function">Panel</a></li>
+<!-- functRef above / important comment -->
+</ul>
+<!-- END NAME_CALL -->
+<!--{TOTAL_CALL} -->
+<!-- END TOTAL_CALL / important comment-->
+<!-- CONTENT_FROM_M2DOC -->
+<!-- the comment above and this one will be replaced by the actual content -->
+
+<hr class="last"> 
+<address>Generated on 14-Apr-2022 by <strong><a class = "image" href="DLMPro" title="Matlab Documentation">m2docgen</a></strong> &copy; 2022 </address>
+</body>
+</html>

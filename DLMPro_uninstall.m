@@ -1,3 +1,4 @@
+%
 % uninstalling DLMpro
 %
 %% Description
