@@ -1,24 +1,33 @@
 classdef DLMpro < handle
+    %% Description
+    %
+    %% Info for Output
     % Qkk - in aero Coordinate System  !
     % Qss - in CS after Transformation !
     % GSA - in CS after Transformation !
     %
+    %% License
+    %
+    %
+    properties (Constant)
+        version = 1.0   % Version of Code
+    end
     properties
         wingProp        % wing properties
         panelProp       % panel properies
         SYM             % symmetry flag (1: symmetry, 2: no symmetry)
         geo             % geometry for visualization
-        cT             % parameter for coordinate System transformation
+        cT              % parameter for coordinate System transformation
         resultArray={}  % result array
     end
     properties (Dependent)
         resultOverview  % result overview
         T_CS            % Transform_CS
     end
-    
+
     methods
         % Constructor
-        function obj = DLMpro(Span,Chord,NS,NC,Sweep,Dihedral,TR,varargin)
+        function self = DLMpro(Span,Chord,NS,NC,Sweep,Dihedral,TR,varargin)
             % creates DLMpro Object
             %% Syntax
             %   obj = DLMPro(Span,Chord,NS,NC,Sweep,Dihedral,TR)
@@ -44,8 +53,8 @@ classdef DLMpro < handle
             %       Approximation [string]  - Approximation method: choose between
             %                                   ["Watkins","Laschka"(default),"Desmarais"]
             %
-            %       Sym           [boolean] - is wing symmetric - boolean
-            %       CSChange      [double]  - Euler Angle describing change of
+            %       SYM         [boolean]   - is wing symmetric - boolean
+            %       CSChange    [double]    - Euler Angle describing change of
             %                                 coordinate system between structural
             %                                 and aerodynamic [0,0,0] (default)
             %% 
@@ -80,40 +89,51 @@ classdef DLMpro < handle
             if isempty(ct)
                 ct = [0,0,0];
             end
-            obj.cT = ct;
+            self.cT = ct;
 
             %% Parameter definition
+            % Create Wing Object
             wg = Wing(shift(1),shift(2),shift(3));
 
-            wg.Span = Span; %Wing Span
-            wg.Chord = Chord;  %wing chord
-            wg.NS = NS;  %Number of spanwise boxes
-            wg.NC = NC;  %Number of chordwise boxes
-            wg.Sweep  = Sweep;  %sweep in degrees
-            wg.Dihedral  = Dihedral; %dihedral in degrees
-            wg.TR = TR; %Taper ratio
-            obj.wingProp  = wg;
+            wg.Span = Span;         % Wing Span
+            wg.Chord = Chord;       % wing chord
+            wg.NS = NS;             % Number of spanwise boxes
+            wg.NC = NC;             % Number of chordwise boxes
+            wg.Sweep  = Sweep;      % sweep in degrees
+            wg.Dihedral  = Dihedral;% dihedral in degrees
+            wg.TR = TR;             % Taper ratio
+            self.wingProp  = wg;    % add object to DLMpro Object
 
+            % check for symmetry
             if sym == 1
-                symPoints = wg.Symmetry; %points of wing with symmetry are calculated
-                symNS = NS*2;   %double the number of spanwise panel in case of symmetry
+                symPoints = wg.Symmetry; % points of wing with symmetry are calculated
+                symNS = NS*2;            % double the number of spanwise panel in case of symmetry
             else
                 symPoints = wg.Points;
                 symNS = NS;
             end
             
-            obj.wingProp  = wg;
-            obj.panelProp = Panel(symPoints, wg.NC, symNS);
-            obj.SYM = sym;
-            obj.createGeo;
+            self.wingProp  = wg;
+            self.panelProp = Panel(symPoints, wg.NC, symNS);
+            self.SYM = sym;
+            self.createGeo;
             
             % CalcAIC if direct requested
             if(~isempty(kVect))
-                obj.calcAIC(kVect,machVect,int,app,gsa)
+                self.calcAIC(kVect,machVect,int,app,gsa)
             end         
         end
        
         function res = calcAIC(obj,kVect,machVect,varargin)
+            %
+            %% Syntax
+            %
+            %% Input
+            %
+            %% Output
+            %
+            %
+            
             %% Input Parser
             p = inputParser;
             addOptional(p,'Integration',"Parabolic",@(s) any(strcmpi(s,["Parabolic","Quartic"])));
@@ -316,14 +336,18 @@ classdef DLMpro < handle
             elemTable.Properties.VariableNames = {'type','idELEM','gridID'};
             
             % create object and store data
-            obj.geo = sdb_geometry3D;
-            obj.geo.name = "AERO";
-            obj.geo.viewSettings.viewGeo = [3.999198187806840e+04,24.40483056985801];
-            obj.geo.addDesign('AERO','o',0.5,'k',2,	'#4DBEEE',1,'jet');
-            obj.geo.addDesign('RP','o',0.5,'b',2.5,	'#4DBEEE');
-            obj.geo.addDesign('CP','o',0.5,'g',2.5,	'#4DBEEE');
-            obj.geo.addDesign('SP','o',0.5,'r',2.5,	'#4DBEEE');
-            
+            try
+                obj.geo = sdb_geometry3D;
+                obj.geo.name = "AERO";
+                obj.geo.viewSettings.viewGeo = [3.999198187806840e+04,24.40483056985801];
+                obj.geo.addDesign('AERO','o',0.5,'k',2,	'#4DBEEE',1,'jet');
+                obj.geo.addDesign('RP','o',0.5,'b',2.5,	'#4DBEEE');
+                obj.geo.addDesign('CP','o',0.5,'g',2.5,	'#4DBEEE');
+                obj.geo.addDesign('SP','o',0.5,'r',2.5,	'#4DBEEE');
+            catch
+                disp("Note: Visualization Module currently not published! Coming soon...");
+            end
+
             % change coordinates
             for i = 1:size(gridTable,1)
                 currentCoord = gridTable{i,'coord'};
@@ -333,7 +357,6 @@ classdef DLMpro < handle
 
             obj.geo.gridTable = gridTable;
             obj.geo.elementTable = elemTable;
-            obj.geo.constraintMatrix = eye(obj.geo.noNodes*6);
             obj.geo.constraintMatrix = 1;
         end
 
