@@ -25,15 +25,22 @@ function [D_dlm] = DLM(Panel,Mach,k,Integration,Approximation,pkern,dsp)
 %   D_dlm: influence matrix of DLM part
 %
 %% References:
-%   [Ref1]
-%   [Ref2]
 %
 %% Disclaimer:
 %
 % Last editor:  Marc Bangel
 % Last edit on: 22.12.2021
 % Code version: X.Y.Z
-% Copyright (c) 2021
+%
+%% Disclaimer
+%   Copyright (c) 2021 Nils Böhnisch, Marc Bangel.
+%
+%   This file is part of DLMPro.
+%
+%   DLMPro is free software: you can redistribute it and/or modify
+%   it under the terms of the GNU General Public License as published by
+%   the Free Software Foundation, either version 3 of the License, or
+%   any later version. Also see the file "License".
 
 %% Get distances
 
