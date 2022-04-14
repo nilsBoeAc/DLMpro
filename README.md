@@ -26,18 +26,18 @@
      however errors cannot be excluded
 
 ## References
-   [1]    Voß, A., “An Implementation ft he Vortex Lattice and the Doublet Lat-
-          tice Method", Institut für Aeroelastik, Deutsches Zentrum für Luft- und 
-          Raumfahrt, Göttingen, Oktober 2020. 
-   [2]    Albano, E. und Rodden, W. P., “A Doublet Lattice Method For Calculat-
-          ing Lift Distributions on Oscillation Surfaces in Subsonic Flows," in AIAA 
-          6th Aerospace Sciences Meeting, New York, 1968. 
-   [3]    Kotikalpudi, A., "Body Freedom Flutter (BFF) Doublet Lattice Method 
-          (DLM)," University of Minnesota Digital Conservancy, 09-Sep-2014. 
-          [Online]. Available: http://hdl.handle.net/11299/165566.
-   [4]    Kotikalpudi, A., Pfifer, H., und Balas, G. J., "Unsteady Aerodynamics
-          Modeling for a Flexible Unmanned Air Vehicle," in AIAA Atmospheric
-          Flight Mechanics Conference, Dallas, Texas, 2015.
+   - [1]    Voß, A., “An Implementation ft he Vortex Lattice and the Doublet Lat-
+            tice Method", Institut für Aeroelastik, Deutsches Zentrum für Luft- und 
+            Raumfahrt, Göttingen, Oktober 2020. 
+   - [2]    Albano, E. und Rodden, W. P., “A Doublet Lattice Method For Calculat-
+            ing Lift Distributions on Oscillation Surfaces in Subsonic Flows," in AIAA 
+            6th Aerospace Sciences Meeting, New York, 1968. 
+   - [3]    Kotikalpudi, A., "Body Freedom Flutter (BFF) Doublet Lattice Method 
+            (DLM)," University of Minnesota Digital Conservancy, 09-Sep-2014. 
+            [Online]. Available: http://hdl.handle.net/11299/165566.
+   - [4]    Kotikalpudi, A., Pfifer, H., und Balas, G. J., "Unsteady Aerodynamics
+            Modeling for a Flexible Unmanned Air Vehicle," in AIAA Atmospheric
+            Flight Mechanics Conference, Dallas, Texas, 2015.
 
 ## Disclaimer
    Copyright (c) 2021 Nils Böhnisch, Marc Bangel, (FH Aachen, RMIT University)
