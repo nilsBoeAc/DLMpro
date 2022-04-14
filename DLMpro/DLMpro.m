@@ -1,14 +1,47 @@
 classdef DLMpro < handle
     %% Description
+    %   This class set up a Doublet-Lattice-Model for a given Wing
+    %   Several Methods are provided for calculating the Aerodyanmic
+    %   Influence Coefficients
+    %
+    %   Constructor:
+    %       self = DLMPro(Span,Chord,NS,NC,Sweep,Dihedral,TR)
+    %
+    %   Methods:
+    %       res = self.calcAIC(kVect,machVect)
+    %
+    %   This Tool will be updated continualy with further modules. (e.g. to
+    %   visualize the results, etc.)
+    %
+    %
+    %   For more detailed Information on methods see Documentation 
+    %       -> "supplemental Software"
     %
     %% Info for Output
-    % Qkk - in aero Coordinate System  !
-    % Qss - in CS after Transformation !
-    % GSA - in CS after Transformation !
+    %   The created object contains a property ("resultOverview"). This
+    %   gives an short overview of the conducted analyses. Since several
+    %   method are available, by reanalysing the AIC, a new result
+    %   structure will be created. This allows to compare different
+    %   calculated AIC for the same configuration.
     %
-    %% License
+    %   Output Coordinate Systems:
+    %       Qkk - in aero       Coordinate System 
+    %       Qss - in structural Coordinate System (after Transformation with "CSChange")
     %
+    %% Examples
+    %   Examples can be found in the "Example_Folder"
     %
+    %% Disclaimer
+    %   Copyright (c) 2021 Nils Böhnisch, Marc Bangel.
+    %
+    %   This file is part of DLMPro.
+    %
+    %   DLMPro is free software: you can redistribute it and/or modify
+    %   it under the terms of the GNU General Public License as published by
+    %   the Free Software Foundation, either version 3 of the License, or
+    %   any later version. Also see the file "License".
+        
+    %% Properties
     properties (Constant)
         version = 1.0   % Version of Code
     end
@@ -25,6 +58,7 @@ classdef DLMpro < handle
         T_CS            % Transform_CS
     end
 
+    %% Normal Methods
     methods
         % Constructor
         function self = DLMpro(Span,Chord,NS,NC,Sweep,Dihedral,TR,varargin)
@@ -56,8 +90,17 @@ classdef DLMpro < handle
             %       SYM         [boolean]   - is wing symmetric - boolean
             %       CSChange    [double]    - Euler Angle describing change of
             %                                 coordinate system between structural
-            %                                 and aerodynamic [0,0,0] (default)
-            %% 
+            %                                 and aerodynamic [0,0,0]
+            %                                 (default) - [in degrees]
+            %% Disclaimer
+            %   Copyright (c) 2021 Nils Böhnisch, Marc Bangel.
+            %
+            %   This file is part of DLMPro.
+            %
+            %   DLMPro is free software: you can redistribute it and/or modify
+            %   it under the terms of the GNU General Public License as published by
+            %   the Free Software Foundation, either version 3 of the License, or
+            %   any later version. Also see the file "License".
 
             %% Add Path
             if(~exist('DLM.m','file')||~exist('VLM.m','file'))
@@ -124,50 +167,76 @@ classdef DLMpro < handle
             end         
         end
        
-        function res = calcAIC(obj,kVect,machVect,varargin)
-            %
+        function res = calcAIC(self,kVect,machVect,varargin)
+            %  self.calcAIC function
+            %  calculates AIC for given reduced Frequencies and Mach
+            %  Numbers
             %% Syntax
-            %
+            %   res = self.calcAIC(kVect,machVect)
+            %   res = self.calcAIC(__,varargin)
             %% Input
+            %   Mandatory:
+            %       kVect       [double]    - Vector containing reduced Freq.
+            %       MachVect    [double]    - Vector containing mach number
+            %
+            %   Optional (Name-Value-Pair)
+            %       
+            %       Integration [string]    - Integration method: choose between
+            %                                   ["Parabolic" (default), "Quartic"]
+            %       Approximation [string]  - Approximation method: choose between
+            %                                   ["Watkins","Laschka"(default),"Desmarais"]
+            %       GSA         [double]    - Transformation matrix between Structure and AeroGrid
+            %       plotKernel  [boolean]   - plots the kernel function 
+            %       verbose     [boolean]   - give detailed outout in console
             %
             %% Output
+            %   The output will be stored in a result structure and also be
+            %   added to the object's property obj.resultArray
             %
+            %% Disclaimer
+            %   Copyright (c) 2021 Nils Böhnisch, Marc Bangel.
             %
+            %   This file is part of DLMPro.
+            %
+            %   DLMPro is free software: you can redistribute it and/or modify
+            %   it under the terms of the GNU General Public License as published by
+            %   the Free Software Foundation, either version 3 of the License, or
+            %   any later version. Also see the file "License"
             
             %% Input Parser
             p = inputParser;
             addOptional(p,'Integration',"Parabolic",@(s) any(strcmpi(s,["Parabolic","Quartic"])));
             addOptional(p,'Approximation',"Laschka",@(s) any(strcmpi(s,["Watkins","Laschka","Desmarais"])));
             addOptional(p,'GSA',[]);
-            addOptional(p,'PlotKernel',0)
-            addOptional(p,'Disp',0)
+            addOptional(p,'plotKernel',0)
+            addOptional(p,'verbose',0)
             p.parse(varargin{:});
 
             gsa      = p.Results.GSA;
             int      = p.Results.Integration;
             app      = p.Results.Approximation;
-            pkern    = p.Results.PlotKernel;
-            dsp      = p.Results.Disp;
+            pkern    = p.Results.plotKernel;
+            dsp      = p.Results.verbose;
             
             %% Initialize Variables
-            Ref_chord = obj.wingProp.Ref_chord;   %reference chord of wing
+            Ref_chord = self.wingProp.Ref_chord;  % reference chord of wing
             totalNumberCases = length(kVect)*length(machVect);
             if(isempty(gsa))
-                ndofAero = (obj.wingProp.NC*obj.wingProp.NS)*2;
+                ndofAero = (self.wingProp.NC*self.wingProp.NS)*2;
                 gsa = eye(ndofAero);
                 Qss = zeros(ndofAero,ndofAero,totalNumberCases);
                 Qkk = zeros(ndofAero,ndofAero,totalNumberCases);
             else
-                ndofAero = (obj.wingProp.NC*obj.wingProp.NS)*2;
+                ndofAero = (self.wingProp.NC*self.wingProp.NS)*2;
                 [sn,an] = size(gsa);
                 Qss = zeros(sn,sn,totalNumberCases);
                 Qkk = zeros(an,an,totalNumberCases);
             end
                         
             %% Calc Values
-            pa = obj.panelProp;
+            pa = self.panelProp;
             combi = zeros(totalNumberCases,2);
-            AIC = zeros(obj.wingProp.NC*obj.wingProp.NS,obj.wingProp.NC*obj.wingProp.NS,totalNumberCases);
+            AIC = zeros(self.wingProp.NC*self.wingProp.NS,self.wingProp.NC*self.wingProp.NS,totalNumberCases);
             n = 0;
             for ma = 1:length(machVect)
                 for ki=1:length(kVect)
@@ -185,9 +254,9 @@ classdef DLMpro < handle
                     D = -(D_vlm+D_dlm);
 
                     % concatenate results to one wing
-                    if obj.SYM == 1
-                        NS_hw = obj.wingProp.NS;
-                        NC = obj.wingProp.NC;
+                    if self.SYM == 1
+                        NS_hw = self.wingProp.NS;
+                        NC = self.wingProp.NC;
                         D_r = D(NS_hw*NC+1:end,NS_hw*NC+1:end);   % influence from right wing on itself
                         D_lr = D(NS_hw*NC+1:end,1:NS_hw*NC);      % influence from left wing on right wing
                         sub_D_lr = zeros(NS_hw*NC,NC,n);
@@ -213,7 +282,7 @@ classdef DLMpro < handle
 
                     %Calculate Derivation matrix W and Integration matrix B
                     [W,B] = DerivationIntegrationMatrix(kr,Ref_chord,pa);
-                    if obj.SYM == 1
+                    if self.SYM == 1
                         W = W(ndofAero/2+1:end,ndofAero+1:end);
                         B = B(ndofAero+1:end,ndofAero/2+1:end);
                     end
@@ -222,8 +291,10 @@ classdef DLMpro < handle
                     % Calc QKK and Qhh
                     Qkk(:,:,n) = B*(D\W); % B*inv(D)*W;
 
-                    % create coordinate Transform matrix to account for different CS in DLM and struture
-                    T = [obj.T_CS obj.T_CS; obj.T_CS obj.T_CS];
+                    % create coordinate Transform matrix to account 
+                    % for different CS-Orientation in DLMpro(aero) and Struture
+
+                    T = [self.T_CS self.T_CS; self.T_CS self.T_CS];
                     T([1,2,4,6],:) = [];
                     T(:,[1,2,4,6]) = [];
                     
@@ -233,12 +304,13 @@ classdef DLMpro < handle
                         TR(s:s+1,s:s+1) = T;
                         i=i+1;
                     end
+
                     QkkT = TR*Qkk(:,:,n)*TR;
                     Qss(:,:,n) = gsa*QkkT*gsa.';
                 end
             end
             
-            res.Nr              = length(obj.resultArray)+1;
+            res.Nr              = length(self.resultArray)+1;
             res.kMList          = combi;
             res.Qss             = Qss;
             res.Qkk             = Qkk;
@@ -250,7 +322,7 @@ classdef DLMpro < handle
             res.B               = B;
             res.W               = W_total;
 
-            obj.resultArray{end+1,1} = res;
+            self.resultArray{end+1,1} = res;
         end
         
         function createGeo(obj)
@@ -345,7 +417,7 @@ classdef DLMpro < handle
                 obj.geo.addDesign('CP','o',0.5,'g',2.5,	'#4DBEEE');
                 obj.geo.addDesign('SP','o',0.5,'r',2.5,	'#4DBEEE');
             catch
-                disp("Note: Visualization Module currently not published! Coming soon...");
+                obj.setWarning(1);
             end
 
             % change coordinates
@@ -361,6 +433,11 @@ classdef DLMpro < handle
         end
 
         function plotDeformedMesh(obj,ax,disp)
+            if(~isa(obj.geo,'sdb_geometry3D'))
+                obj.setWarning(1);
+                return;
+            end
+
             % plotDeformed Mesh
             %% 
             %
@@ -376,6 +453,10 @@ classdef DLMpro < handle
         end
         
         function plotPressCoeff(obj,alpha,res,n,s,varargin)
+            if(~isa(obj.geo,'sdb_geometry3D'))
+                obj.setWarning(1);
+                return;
+            end
             % plotPressCoeff
 
             p = inputParser;
@@ -464,20 +545,24 @@ classdef DLMpro < handle
         end
 
         function createGeoT(obj,a,b,c)
-        % transforms coordinates into new coordinate System defines by rotations parameter a,b,c
-        % only affects the geo-object and thus the visualization
-
-              T = asi_csRot(a,b,c);
-              obj.csT = [a,b,c];
-              for i = 1:obj.geo.noNodes
-                  currentCoord = obj.geo.gridTable{i,3};
-                  newCoord = T*currentCoord';
-                  newCoord(abs(newCoord)<10E-8) = 0;
-                  obj.geo.gridTable{i,3} = newCoord';
-              end
+            % transforms coordinates into new coordinate System defines by rotations parameter a,b,c
+            % only affects the geo-object and thus the visualization
+    
+            T = asi_csRot(a,b,c);
+            obj.csT = [a,b,c];
+            for i = 1:obj.geo.noNodes
+                currentCoord = obj.geo.gridTable{i,3};
+                newCoord = T*currentCoord';
+                newCoord(abs(newCoord)<10E-8) = 0;
+                obj.geo.gridTable{i,3} = newCoord';
+            end
         end
 
         function plotPhaseLag(obj,alpha,res,n,strip)
+            if(~isa(obj.geo,'sdb_geometry3D'))
+                obj.setWarning(1);
+                return;
+            end
             % plotPhaseLag
 
             t = 0:0.01:10;
@@ -507,9 +592,10 @@ classdef DLMpro < handle
             ylabel("cp")
             legend("unsteady","quasi-steady")
         end
+        
     end
-
-    % Get-Methods
+    
+    %% Get Methods
     methods
         function ovTable = get.resultOverview(obj)
             % creates Table to have an overview over all computations made 
@@ -539,9 +625,39 @@ classdef DLMpro < handle
         end
 
         function T = get.T_CS(obj)
-            T = asi_csRot(obj.cT(1),obj.cT(2),obj.cT(3));
-            T(abs(T)<10E-8) = 0;
+            % if available, use extra function
+            try
+                T = asi_csRot(obj.cT(1),obj.cT(2),obj.cT(3));
+            catch
+                a = deg2rad(obj.cT(1));
+                b = deg2rad(obj.cT(2));
+                c = deg2rad(obj.cT(3));
+                
+                %% Transformation
+                T(1,1) = cos(c)*cos(a)-sin(c)*cos(b)*sin(a);
+                T(1,2) = cos(c)*sin(a)+sin(c)*cos(b)*cos(a);
+                T(1,2) = sin(c)*sin(b);
+                T(2,1) = -sin(c)*cos(a)-cos(c)*cos(b)*sin(a);
+                T(2,2) = -sin(c)*sin(a)+cos(c)*cos(b)*cos(a);
+                T(2,3) = cos(c)*sin(b);
+                T(3,1) = sin(b)*sin(a);
+                T(3,2) = -sin(b)*cos(a);
+                T(3,3) = cos(b);
+            end
+                T(abs(T)<10E-8) = 0;
         end
 
+    end
+
+    %% Private Methods
+    methods (Access=private)
+        function setWarning(obj,c)
+            switch c
+                case 1
+                    warning("The visualization module is not published, yet! Coming soon...");
+                otherwise
+                    warning("An unexpected warning occurs. :(")
+            end
+        end
     end
 end
