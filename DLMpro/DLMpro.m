@@ -57,7 +57,7 @@ classdef DLMpro < handle
         
     %% Properties
     properties (Constant)
-        version = "1.0.0"   % Version of Code
+        version = "1.0.1"   % Version of Code
     end
     properties
         wingProp        % wing properties
