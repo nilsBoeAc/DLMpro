@@ -1,12 +1,12 @@
 # dlmpro
 ## Description
-   This class sets up a Doublet-Lattice-Model for a given Wing
+   This class sets up a Doublet-Lattice-Model for a given Wing.
    Several Methods are provided for calculating the Aerodyanmic
-   Influence Coefficients
+   Influence Coefficients (AIC)
 
    All Calculations are performed in MATALB.
 
-   For more detailed Information on methods see Documentation see "supplemental Software"
+   For more detailed Information on methods see Documentation -> see "supplemental Software"
 
 ## Examples
    - Examples can be found in the "Example_Folder" 
@@ -21,7 +21,7 @@
    - surface-body interactions
 
 ## IMPORTANT NOTE
-   - This tool is currently in developement and therefore purely experimentaly!
+   - This tool is currently under development and is therefore purely experimental!
    - It is tested and validated against various models calculated with NX NASTRAN,
      however errors cannot be excluded
 
