@@ -1,0 +1,98 @@
+function createGeo(obj)
+% creates geometry for visualization
+%% Note:
+% The Visualization module is not published, yet!
+%
+
+%% check for Sym
+if(obj.SYM)
+wg = obj.wingProp;
+Pts = obj.panelProp.Pts;
+RP  = obj.panelProp.RP;
+CP  = obj.panelProp.CP;
+SP  = obj.panelProp.SP;
+relNr = (wg.NS+1)*(wg.NC+1)-wg.NC;
+pa.Pts = Pts(relNr:end,:);
+relNr = wg.NS*wg.NC+1;
+pa.RP = RP(relNr:end,:);
+pa.SP = SP(relNr:end,:);
+pa.CP = CP(relNr:end,:);
+else
+pa = obj.panelProp;
+wg = obj.wingProp;
+end
+%% Code
+%             pa = obj.panelProp;
+%             wg = obj.wingProp;
+
+numberGridpoints = size(pa.Pts,1)+size(pa.RP,1)+size(pa.CP,1)+size(pa.SP,1);
+id = (1:numberGridpoints)';
+startRP = size(pa.Pts,1)+1;
+endRP   = size(pa.Pts,1)+size(pa.RP,1);
+startCP = endRP+1;
+endCP   = size(pa.Pts,1)+size(pa.RP,1)+size(pa.CP,1);
+startSP = endCP+1;
+endSP   = size(pa.Pts,1)+size(pa.RP,1)+size(pa.CP,1)+size(pa.SP,1);
+
+coord = [pa.Pts;pa.RP;pa.CP;pa.SP];
+% grid Points
+gridTable = table(id,coord);
+gridTable.Properties.VariableNames = {'ID','coord'};
+
+% Elements Panel
+numberElem = wg.NC*wg.NS+size(pa.RP,1)+size(pa.CP,1)+size(pa.SP,1);
+
+gridID_AERO = zeros(wg.NC*wg.NS,4);
+ni = 1; k = 1; c = 0;
+pX = wg.NC;  pY = wg.NS;
+for i=1:(pX)*(pY)
+if(c==(pX))
+c=0;
+k = k + 1;
+end
+gridID_AERO(ni,1) = k ;
+gridID_AERO(ni,2) = k+1 ;
+gridID_AERO(ni,3) = k+1+(pX+1);
+gridID_AERO(ni,4) = k+pX+1;
+
+k = k + 1;
+ni = ni+1;
+c = c+1;
+end
+type_AERO = repmat("AERO",wg.NC*wg.NS,1);
+
+% Elements RP
+gridID_RP = zeros(size(pa.RP,1),4);
+gridID_RP(:,1) = (startRP:endRP)';
+type_RP   = repmat("RP",size(pa.RP,1),1);
+
+% Elemetns CP
+gridID_CP = zeros(size(pa.CP,1),4);
+gridID_CP(:,1) = (startCP:endCP)';
+type_CP   = repmat("CP",size(pa.CP,1),1);
+
+% Elemetns SP
+gridID_SP = zeros(size(pa.SP,1),4);
+gridID_SP(:,1) = (startSP:endSP)';
+type_SP   = repmat("SP",size(pa.SP,1),1);
+
+% Elements total
+idELEM = (1:numberElem)';
+type = [type_AERO;type_RP;type_CP;type_SP];
+gridID = [gridID_AERO;gridID_RP;gridID_CP;gridID_SP];
+
+elemTable = table(type,idELEM,gridID);
+elemTable.Properties.VariableNames = {'type','idELEM','gridID'};
+
+% create object and store data
+try
+obj.geo = sdb_geometry3D;
+obj.geo.name = "AERO";
+obj.geo.viewSettings.viewGeo = [3.999198187806840e+04,24.40483056985801];
+obj.geo.addDesign('AERO','o',0.5,'k',2,	'#4DBEEE',1,'jet');
+obj.geo.addDesign('RP','o',0.5,'b',2.5,	'#4DBEEE');
+obj.geo.addDesign('CP','o',0.5,'g',2.5,	'#4DBEEE');
+obj.geo.addDesign('SP','o',0.5,'r',2.5,	'#4DBEEE');
+catch
+obj.setWarning(1);
+end

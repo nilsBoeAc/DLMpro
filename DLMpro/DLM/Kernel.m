@@ -29,15 +29,22 @@ function [P1,P2] = Kernel(Mach,k,x,y,z,e,tanLambda,relGamma,method,dsp)
 %   P1 & P2: Solutions of Kernel function for specific point
 %
 %% References:
-%   [Ref1]
-%   [Ref2]
 %
 %% Disclaimer:
 %
 % Last editor:  Marc Bangel
 % Last edit on: 22.12.2021
 % Code version: X.Y.Z
-% Copyright (c) 2021
+%
+%% Disclaimer
+%   Copyright (c) 2021 Nils Böhnisch, Marc Bangel.
+%
+%   This file is part of DLMPro.
+%
+%   DLMPro is free software: you can redistribute it and/or modify
+%   it under the terms of the GNU General Public License as published by
+%   the Free Software Foundation, either version 3 of the License, or
+%   any later version. Also see the file "License".
 
 %% Coefficients
 
