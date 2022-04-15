@@ -102,10 +102,12 @@ classdef DLMpro < handle
             %                                   ["Watkins","Laschka"(default),"Desmarais"]
             %
             %       SYM         [boolean]   - is wing symmetric - boolean
-            %       CSChange    [double]    - Euler Angle describing change of
+            %       CSChange    [double]    - coordinate system rotation describing change of
             %                                 coordinate system between structural
             %                                 and aerodynamic [0,0,0]
             %                                 (default) - [in degrees]
+            %                               - This is purely experimently - use with caution!!
+            %
             %% Disclaimer
             %   Copyright (c) 2021 Nils Böhnisch, Marc Bangel.
             %
@@ -199,7 +201,10 @@ classdef DLMpro < handle
             %                                   ["Parabolic" (default), "Quartic"]
             %       Approximation [string]  - Approximation method: choose between
             %                                   ["Watkins","Laschka"(default),"Desmarais"]
-            %       GSA         [double]    - Transformation matrix between Structure and AeroGrid
+            %       GSA         [double]    - Transformation matrix between Structure and AeroGrid 
+            %                               - only for describing the splines
+            %                               - orientation of coordinate system will not be taken into account in this matrix 
+            %                               - use CSChange property
             %       plotKernel  [boolean]   - plots the kernel function 
             %       verbose     [boolean]   - give detailed outout in console
             %
@@ -248,6 +253,9 @@ classdef DLMpro < handle
             end
                         
             %% Calc Values
+            disp("--- START Calculation ---");
+            disp("   --- Integration: "+int);
+            disp("   --- Approximation: "+app);
             pa = self.panelProp;
             combi = zeros(totalNumberCases,2);
             AIC = zeros(self.wingProp.NC*self.wingProp.NS,self.wingProp.NC*self.wingProp.NS,totalNumberCases);
@@ -337,10 +345,15 @@ classdef DLMpro < handle
             res.W               = W_total;
 
             self.resultArray{end+1,1} = res;
+            disp("--- Calculation Finished ---"+newline);
         end
         
         function createGeo(obj)
             % creates geometry for visualization
+            %% Note:
+            % The Visualization module is not published, yet!
+            %
+
             %% check for Sym
             if(obj.SYM)
                 wg = obj.wingProp;
@@ -447,6 +460,11 @@ classdef DLMpro < handle
         end
 
         function plotDeformedMesh(obj,ax,disp)
+            % plot a deformed mesh
+            %% Note:
+            % The Visualization module is not published, yet!
+            %
+
             if(~isa(obj.geo,'sdb_geometry3D'))
                 obj.setWarning(1);
                 return;
@@ -467,6 +485,11 @@ classdef DLMpro < handle
         end
         
         function plotPressCoeff(obj,alpha,res,n,s,varargin)
+            % plots the press Coefficient
+            %% Note:
+            % The Visualization module is not published, yet!
+            %
+
             if(~isa(obj.geo,'sdb_geometry3D'))
                 obj.setWarning(1);
                 return;
@@ -561,7 +584,10 @@ classdef DLMpro < handle
         function createGeoT(obj,a,b,c)
             % transforms coordinates into new coordinate System defines by rotations parameter a,b,c
             % only affects the geo-object and thus the visualization
-    
+            %% Note:
+            % The Visualization module is not published, yet!
+            %
+
             T = asi_csRot(a,b,c);
             obj.csT = [a,b,c];
             for i = 1:obj.geo.noNodes
@@ -573,6 +599,10 @@ classdef DLMpro < handle
         end
 
         function plotPhaseLag(obj,alpha,res,n,strip)
+            % plots the phase lag
+            %% Note:
+            % The Visualization module is not published, yet!
+            %
             if(~isa(obj.geo,'sdb_geometry3D'))
                 obj.setWarning(1);
                 return;

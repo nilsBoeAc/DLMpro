@@ -1,0 +1,13 @@
+function symPoints = Symmetry(obj)
+sym = obj.Points;
+sym(1:obj.NC+1,:) = [];
+sym(:,2) = -sym(:,2);
+sym_f = [];
+for m=1:obj.NS
+sub_sym = sym(1:obj.NC+1,:);
+sym(1:obj.NC+1,:) = [];
+sym_f = [sub_sym;sym_f];
+end
+symPoints = [sym_f;obj.Points];
+end
+end

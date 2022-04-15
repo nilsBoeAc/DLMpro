@@ -1,0 +1,24 @@
+function plotDeformedMesh(obj,ax,disp)
+% plot a deformed mesh
+%% Note:
+% The Visualization module is not published, yet!
+%
+
+if(~isa(obj.geo,'sdb_geometry3D'))
+obj.setWarning(1);
+return;
+end
+
+% plotDeformed Mesh
+%% 
+%
+x = obj.panelProp.RP(:,1);
+y = obj.panelProp.RP(:,2);
+z = disp(:,3);
+
+coord = obj.geo.gridTable{:,3};
+pts_x = coord(:,1);
+pts_y = coord(:,2);
+dispNew = griddata(x,y,z,pts_x,pts_y,'v4');
+obj.geo.plotGeo('ax',ax,'disp',dispNew);   
+end

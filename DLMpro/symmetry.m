@@ -7,25 +7,28 @@ function Dnew = symmetry(obj,D)
 %   wing to another if only one wing shall be analyzed.
 %   
 %% Syntax:
-%   Here are the syntax
+%   Dnew = symmetry(obj,D);
 %
 %% Input:
 %   Required input variables:
-%   D: influence coefficients matrx
+%     D: influence coefficients matrx
 %   
 %% Output:
 %   Dnew: new influence coefficients matrix considered of symmetry effects
-%
-%% References:
-%   [Ref1]
-%   [Ref2]
 %
 %% Disclaimer:
 %
 % Last editor:  Marc Bangel
 % Last edit on: 17.01.2022
-% Code version: X.Y.Z
-% Copyright (c) 2022
+%   Copyright (c) 2021 Nils Böhnisch, Marc Bangel.
+%
+%   This file is part of DLMPro.
+%
+%   DLMPro is free software: you can redistribute it and/or modify
+%   it under the terms of the GNU General Public License as published by
+%   the Free Software Foundation, either version 3 of the License, or
+%   any later version. Also see the file "License".
+
 
 %% ToDo / Changelog
 % -Improve kernel function plotting behaviour
