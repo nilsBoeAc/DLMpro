@@ -40,7 +40,7 @@ dlm = DLMpro(span,chord,NS,NC,sweep,dihedral,taperRatio,offset);
 %% Calc AIC with given red. frequencies and mach numbers
 k = 0.1:0.1:1;      % reduced Frequency
 ma = 0.1:0.1:0.6;  % mach Number
-ma = 0.2;
+%ma = 0.2;
 
 res1 = dlm.calcAIC(k,ma,'verbose',1);
 
