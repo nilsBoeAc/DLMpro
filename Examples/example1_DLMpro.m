@@ -25,11 +25,59 @@
 clearvars;
 
 %% Wing definition
+span  = 5.7*2;  % [m]
+chord = 1.25;   % [m]
+NS    = 30;
+NC    = 5;
+sweep = 0;      % [degree]
+dihedral = 0;   % [degree]
+taperRatio =1;  % [-]
 
 %% Object creation
+offset = [-0.625,0,0];
+dlm = DLMpro(span,chord,NS,NC,sweep,dihedral,taperRatio,offset);
 
 %% Calc AIC with given red. frequencies and mach numbers
+k = 0.1:0.1:1;      % reduced Frequency
+ma = 0.1:0.1:0.6;  % mach Number
+ma = 0.2;
+
+res1 = dlm.calcAIC(k,ma,'verbose',1);
 
 %% Adjust Method (Integration and Approximation)
+int = "Parabolic";
+app = "Watkins";
+res2 = dlm.calcAIC(k,ma,'Integration',int,'Approximation',app);
+
+int = "Parabolic";
+app = "Desmarais";
+res3 = dlm.calcAIC(k,ma,'Integration',int,'Approximation',app);
+
+int = "Quartic";
+app = "Laschka";
+res4 = dlm.calcAIC(k,ma,'Integration',int,'Approximation',app);
+
+int = "Quartic";
+app = "Watkins";
+res5 = dlm.calcAIC(k,ma,'Integration',int,'Approximation',app);
+
+int = "Quartic";
+app = "Desmarais";
+res6 = dlm.calcAIC(k,ma,'Integration',int,'Approximation',app);
+
 
 %% Access results
+dlm.resultOverview
+% Result No: Number of Result
+% k-M-List : Pair for which the AIC are calculated
+% AIC      : Aerodynamic Influence Coefficients
+% Qss      : Aerodyanmic Influence with respect to 2 DoF per panel (pitch and plunge) - in structure coordinate System
+% Qkk      : Aerodyanmic Influence with respect to 2 DoF per panel (pitch and plunge) - in aero coordinate System
+% other    : information on used methods
+
+% Note: Since GSA (Transformation matrix between structural and aeor grid)
+%       is not given, the size and values of Qss and Qkk are equal.
+
+
+
+
