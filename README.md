@@ -1,4 +1,4 @@
-# dlmpro
+# DLMpro
 ## Description
    This class sets up a Doublet-Lattice-Model for a given Wing.
    Several Methods are provided for calculating the Aerodyanmic
