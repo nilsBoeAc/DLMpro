@@ -1,0 +1,96 @@
+function plotPressCoeff(obj,alpha,res,n,s,varargin)
+% plots the press Coefficient
+%% Note:
+% The Visualization module is not published, yet!
+%
+
+if(~isa(obj.geo,'sdb_geometry3D'))
+obj.setWarning(1);
+return;
+end
+% plotPressCoeff
+
+p = inputParser;
+addOptional(p,'axC',[]);
+addOptional(p,'axSpan',[]);
+addOptional(p,'axStrip',[]);
+p.parse(varargin{:});
+axC = p.Results.axC;
+axS = p.Results.axSpan;
+axSt = p.Results.axStrip;
+
+
+NC = obj.wingProp.NC;
+NS = obj.wingProp.NS;
+aVect(1:NC*NS) = deg2rad(alpha);
+cp = real(res.AIC(:,:,n))*aVect'; %pressure coefficient as vector
+cp_m = reshape(cp,[NC,NS]); %shape to matrix like panel on wing
+cp_s = cp_m(:,s);
+cp_s2 = cp_m(:,NS);
+%             if obj.SYM ==1
+%                 PArea = obj.panelProp.A;
+%                 PArea(1:NC*NS)=[];
+%             else
+%                 PArea = obj.panelProp.A;
+%             end
+
+ca = mean(cp_m);    %calculated lift coefficient of each strip
+ca_w = mean(ca);
+
+%% plot
+if(isempty(axC))
+figure(200); clf;
+axC = nexttile;
+colorbar
+axC.Title.String = "Panel pressure coefficients";
+end
+obj.geo.plotGeo('ax',axC,'colorData',cp);
+
+if(isempty(axSt))
+figure(100); clf;
+axSt = nexttile;
+end
+
+x=(1/NC)*0.25:1/NC:1;
+x(end+1)=1;
+cp_s(end+1)=0;
+cp_s2(end+1)=0;
+ix =(1/NC)*0.25:0.01:1;
+iy = interp1(x,cp_s,ix,'spline');
+iy2 = interp1(x,cp_s2,ix,'spline');
+hold on
+plot(axSt,ix,iy,'b',ix,iy2,'r')
+legend('Wurzel','Spitze','AutoUpdate','off')
+plot(axSt,x(1:end-1),cp_s(1:end-1),'bo',x(1:end-1),cp_s2(1:end-1),'ro')
+axSt.XLabel.String = "Dimensionslose Tiefe";
+axSt.YLabel.String = "Cp,res";
+axSt.Title.String = "Druckverteilung über die Flügeltiefe";
+
+if(isempty(axS))
+figure(101); clf;
+axS = nexttile;
+end
+plot(axS,0:1/(NS-1):1,ca)
+axS.XLabel.String = "Dimensionless Span";
+axS.YLabel.String = "Ca";
+axS.Title.String = "Lift distribution over span";
+
+x = (1/NS)*0.5:(1/NS):1;
+x(end+1)=1;
+ca(end+1)=0;
+ix = 0:0.001:1;
+iy = interp1(x,ca,ix);
+plot(axS,ix,iy)
+axS.XLabel.String = "Dimensionslose Spannweite";
+axS.YLabel.String = "Cp,res";
+axS.Title.String = "Druckverteilung über die Spannweite";
+
+if(isempty(axC))
+figure(200); clf;
+axC = nexttile;
+colorbar
+axC.Title.String = "Druckbeiwerte der Elemente";
+end
+
+obj.geo.plotGeo('ax',axC,'xRev',0,'colorData',cp);
+end

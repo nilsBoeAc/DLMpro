@@ -1,0 +1,102 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+<title>Description of LaschkaApprox</title>
+<meta name="keywords" content="LaschkaApprox">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="generator" content="m2docgen &copy 2021: Nils Boehnisch">
+<meta name="robots" content="index, follow">
+<link type="text/css" rel="stylesheet" href="ressources\m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+
+<div><a class = "image" href="DLMPro"><img border="0" src="ressources\logo.jpg"></a></div>
+<h1>LaschkaApprox </h1> <hr class="btw">
+<!-- START SHORT_DESC / important comment -->
+<div><pre class="firstDesc"> LaschkaApprox calculates integrals I1 and I2 with Laschka
+ Approximation</pre></div>
+<!-- END SHORT_DESC / important comment -->
+<!-- START Description: / important comment -->
+<h2><a name="_description"></a>Description: <a href="#_top"></a></h2><hr  class="btw">
+<div class="fragment"><pre class="text">   Laschka approximation is calculated in LaschkaApproxCalc(). This
+ 	approximation is only valid for u1>=0. To approximate the integrals if
+   u1<0 the approximation has to be done for different values and has to be
+   calculated in the end.
+   </pres></div>
+<!-- END Description: / important comment -->
+<!-- START Syntax: / important comment -->
+<h2><a name="_description"></a>Syntax: <a href="#_top"></a></h2><hr  class="btw">
+<div class="fragment"><pre class="text">   Here are the syntax
+</pres></div>
+<!-- END Syntax: / important comment -->
+<!-- START Input: / important comment -->
+<h2><a name="_description"></a>Input: <a href="#_top"></a></h2><hr  class="btw">
+<div class="fragment"><pre class="text">   Required input values:
+   u1, k1: Factors of kernel function
+ 
+   Optional input variables:
+   dsp: Flag for display status in command window
+ 
+   Name-Value-Pairs:
+   i: imgainary unit
+   ind1: index of positiv u1 values in matrix
+   ind2: index of negativ u1 values in matrix
+   u1_t1: matrix only with positiv u1 values
+   u1_t2: matrix only with negativ u1 values
+   k1_t1: matrix of k1 if u1 is positiv
+   k1_t2: matrix of k1 if u1 is negativ
+   u1_0: matrix of zeros for u1
+   I1_pos & I2_pos: approximated integral I1 for positiv u1 values
+   I1_0 & I2_0: approximated integral I1 for u1 = 0
+   I1_neg & I2_neg: approximated integrals for negative u1 values
+ </pres></div>
+<!-- END Input: / important comment -->
+<!-- START Output: / important comment -->
+<h2><a name="_description"></a>Output: <a href="#_top"></a></h2><hr  class="btw">
+<div class="fragment"><pre class="text">   I1 and I2: approximated integrals for u1>=0 and u1<0
+</pres></div>
+<!-- END Output: / important comment -->
+<!-- START References: / important comment -->
+<h2><a name="_description"></a>References: <a href="#_top"></a></h2><hr  class="btw">
+<div class="fragment"><pre class="text"></pres></div>
+<!-- END References: / important comment -->
+<!-- START Disclaimer: / important comment -->
+<h2><a name="_description"></a>Disclaimer: <a href="#_top"></a></h2><hr  class="btw">
+<div class="fragment"><pre class="text">
+ Last editor:  Marc Bangel
+ Last edit on: 22.12.2021
+ Code version: X.Y.Z
+</pres></div>
+<!-- END Disclaimer: / important comment -->
+<!-- START Disclaimer / important comment -->
+<h2><a name="_description"></a>Disclaimer <a href="#_top"></a></h2><hr  class="btw">
+<div class="fragment"><pre class="text">   Copyright (c) 2021 Nils Böhnisch, Marc Bangel.
+
+   This file is part of DLMPro.
+
+   DLMPro is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   any later version. Also see the file "License".</pres></div>
+<!-- END Disclaimer / important comment -->
+<!-- START TOTAL_CALL / important comment-->
+<h2><a name="_cross"></a>Function References<a href="#_top"></a></h2><hr class="btw">
+<!-- START NAME_CALL -->
+<pre class = "text">This function calls:</pre><ul>
+
+<li><a href="LaschkaApproxCalc.html" class="code" title="Go To Function">LaschkaApproxCalc</a></li>
+<!-- functRef above / important comment -->
+</ul>
+<!-- END NAME_CALL -->
+<!--{TOTAL_CALL} -->
+<!-- END TOTAL_CALL / important comment-->
+<!-- CONTENT_FROM_M2DOC -->
+<!-- the comment above and this one will be replaced by the actual content -->
+
+<hr class="last"> 
+<address>Generated on 15-Apr-2022 by <strong><a class = "image" href="DLMPro" title="Matlab Documentation">m2docgen</a></strong> &copy; 2022 </address>
+</body>
+</html>

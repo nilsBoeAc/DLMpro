@@ -1,0 +1,40 @@
+function plotPhaseLag(obj,alpha,res,n,strip)
+% plots the phase lag
+%% Note:
+% The Visualization module is not published, yet!
+%
+if(~isa(obj.geo,'sdb_geometry3D'))
+obj.setWarning(1);
+return;
+end
+% plotPhaseLag
+
+t = 0:0.01:10;
+ar = deg2rad(alpha);
+a = ar*exp(1j*2.*t);
+NC = obj.wingProp.NC;
+NS = obj.wingProp.NS;
+cp = sum(res.AIC(:,:,n),2); %pressure coefficient as vector
+cp_m = reshape(cp,[NC,NS]); %shape to matrix like panel on wing
+ca = mean(cp_m);    %calculated lift coefficient of each strip
+ca_st = ca(strip);
+q = ca_st.*a;
+
+D_vlm = symmetry(obj,res.VLM);
+AIC_vlm = inv(D_vlm);
+cpr = sum(AIC_vlm,2); %pressure coefficient as vector
+cp_mr = reshape(cpr,[NC,NS]); %shape to matrix like panel on wing
+car = mean(cp_mr);
+car_st = car(strip);
+qs = abs(car_st)*ar;
+qs1 = qs*exp(1j*2.*t);
+
+figure(500); hold on;
+plot(t,real(q))
+plot(t,real(qs1))
+xlabel("time")
+ylabel("cp")
+legend("unsteady","quasi-steady")
+end
+
+end

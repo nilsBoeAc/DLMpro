@@ -1,0 +1,16 @@
+function createGeoT(obj,a,b,c)
+% transforms coordinates into new coordinate System defines by rotations parameter a,b,c
+% only affects the geo-object and thus the visualization
+%% Note:
+% The Visualization module is not published, yet!
+%
+
+T = asi_csRot(a,b,c);
+obj.csT = [a,b,c];
+for i = 1:obj.geo.noNodes
+currentCoord = obj.geo.gridTable{i,3};
+newCoord = T*currentCoord';
+newCoord(abs(newCoord)<10E-8) = 0;
+obj.geo.gridTable{i,3} = newCoord';
+end
+end
