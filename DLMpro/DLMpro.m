@@ -253,8 +253,10 @@ classdef DLMpro < handle
             end
                         
             %% Calc Values
-            disp("--- START Calculation ---");
-            disp("   --- Integration: "+int);
+            tic
+            totalCases = length(machVect)+length(kVect);
+            disp("--- START Calculation of AIC ("+num2str(totalCases)+" k-Ma Pairs) ---");
+            disp("   --- Integration:   "+int);
             disp("   --- Approximation: "+app);
             pa = self.panelProp;
             combi = zeros(totalNumberCases,2);
@@ -345,7 +347,8 @@ classdef DLMpro < handle
             res.W               = W_total;
 
             self.resultArray{end+1,1} = res;
-            disp("--- Calculation Finished ---"+newline);
+            elapsedTime = toc;
+            disp("--- Calculation Finished in "+num2str(round(elapsedTime,2))+" sec ---");
         end
         
         function createGeo(obj)
@@ -353,7 +356,7 @@ classdef DLMpro < handle
             %% Note:
             % The Visualization module is not published, yet!
             %
-
+            
             %% check for Sym
             if(obj.SYM)
                 wg = obj.wingProp;
@@ -439,7 +442,7 @@ classdef DLMpro < handle
                 obj.geo = sdb_geometry3D;
                 obj.geo.name = "AERO";
                 obj.geo.viewSettings.viewGeo = [3.999198187806840e+04,24.40483056985801];
-                obj.geo.addDesign('AERO','o',0.5,'k',2,	'#4DBEEE',1,'jet');
+                obj.geo.addDesign('AERO','o',0.5,'k',2,	'#4DBEEE','c',1,'jet');
                 obj.geo.addDesign('RP','o',0.5,'b',2.5,	'#4DBEEE');
                 obj.geo.addDesign('CP','o',0.5,'g',2.5,	'#4DBEEE');
                 obj.geo.addDesign('SP','o',0.5,'r',2.5,	'#4DBEEE');
