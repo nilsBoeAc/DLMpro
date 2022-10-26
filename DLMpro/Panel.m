@@ -37,6 +37,12 @@ classdef Panel < handle
             obj.Pts = Points;
             obj.NC = NC;
             obj.NS = NS;
+
+            if any(obj.AR>=3)
+                disp("--- Warning in DLMpro: Some Panels have an Aspect Ratio higher 3!");
+                disp("   -> it is recommended to remesh the Geometry!");
+                disp("   -> and/or use 'Quartic' Integration!");
+            end
         end
         function PtsIdx = get.PtsIdx(obj)
             a = 1:length(obj.Pts);
