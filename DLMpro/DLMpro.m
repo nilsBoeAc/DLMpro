@@ -17,6 +17,20 @@ classdef DLMpro < handle
     %   For more detailed Information on methods see Documentation 
     %       -> "supplemental Software"
     %
+    %% Coordinate Systems used in Code
+    %
+    %   Aerodynamic Coordinate System
+    %       x -> in streamwise direction (chord)
+    %       y -> in span direction
+    %       z -> correspondingly to create a cartesian coordinate system
+    %
+    %   Structural Coordinate System
+    %       This coordinate system can be defined by using the
+    %       "RotationMatrix" Input/Property.
+    %       This Matrix is a 3x3 Matrix that describes the orientation of
+    %       a vector in Aero-CS in the structural-CS.
+    %           [RotationMatrix]*[Vect_Aero] = [Vect_Struct]
+    %
     %% Info for Output
     %   The created object contains a property ("resultOverview"). This
     %   gives an short overview of the conducted analyses. Since several
@@ -57,14 +71,14 @@ classdef DLMpro < handle
         
     %% Properties
     properties (Constant)
-        version = "1.0.1"   % Version of Code
+        version = "1.1.0"   % Version of Code
     end
     properties
         wingProp        % wing properties
         panelProp       % panel properies
         SYM             % symmetry flag (1: symmetry, 2: no symmetry)
         geo             % geometry for visualization
-        cT              % parameter for coordinate System transformation
+        RT              % parameter for coordinate System transformation
         resultArray={}  % result array
     end
     properties (Dependent)
@@ -102,11 +116,12 @@ classdef DLMpro < handle
             %                                   ["Watkins","Laschka"(default),"Desmarais"]
             %
             %       SYM         [boolean]   - is wing symmetric - boolean
-            %       CSChange    [double]    - coordinate system rotation describing change of
-            %                                 coordinate system between structural
-            %                                 and aerodynamic [0,0,0]
-            %                                 (default) - [in degrees]
+            %
+            %       RotationMatrix [double] - This Matrix is a 3x3 Matrix that describes the orientation of
+            %                                 a vector in Aero-CS in the structural-CS.
+            %                                 eye(3) (default)
             %                               - This is purely experimently - use with caution!!
+            %       CSChange    [double]    - NOT USED ANYMORE -> Please use RotationMatrix
             %
             %% Disclaimer
             %   Copyright (c) 2021 Nils Böhnisch, Marc Bangel.
@@ -133,6 +148,7 @@ classdef DLMpro < handle
             addOptional(p,'Integration',"Parabolic",@(s) any(strcmpi(s,["Parabolic","Quartic"])));
             addOptional(p,'Approximation',"Laschka",@(s) any(strcmpi(s,["Watkins","Laschka","Desmarais"])));
             addOptional(p,'SYM',1);
+            addOptional(p,'RotationMatrix',[])
             addOptional(p,'CSChange',[])
             p.parse(varargin{:});
 
@@ -143,12 +159,16 @@ classdef DLMpro < handle
             int      = p.Results.Integration;
             app      = p.Results.Approximation;
             sym      = p.Results.SYM;
-            ct       = p.Results.CSChange;
+            RT       = p.Results.RotationMatrix;
+            cs       = p.Results.CSChange;
 
-            if isempty(ct)
-                ct = [0,0,0];
+            if isempty(RT)
+                RT = eye(3);
             end
-            self.cT = ct;
+            self.RT = RT;
+            if ~isempty(cs)
+                error("Error: CSChange is not longer supported! -> use RotationMatrix instead!");
+            end
 
             %% Parameter definition
             % Create Wing Object
@@ -584,23 +604,6 @@ classdef DLMpro < handle
             obj.geo.plotGeo('ax',axC,'xRev',0,'colorData',cp);
         end
 
-        function createGeoT(obj,a,b,c)
-            % transforms coordinates into new coordinate System defines by rotations parameter a,b,c
-            % only affects the geo-object and thus the visualization
-            %% Note:
-            % The Visualization module is not published, yet!
-            %
-
-            T = asi_csRot(a,b,c);
-            obj.csT = [a,b,c];
-            for i = 1:obj.geo.noNodes
-                currentCoord = obj.geo.gridTable{i,3};
-                newCoord = T*currentCoord';
-                newCoord(abs(newCoord)<10E-8) = 0;
-                obj.geo.gridTable{i,3} = newCoord';
-            end
-        end
-
         function plotPhaseLag(obj,alpha,res,n,strip)
             % plots the phase lag
             %% Note:
@@ -672,28 +675,26 @@ classdef DLMpro < handle
         end
 
         function T = get.T_CS(obj)
-            % if available, use extra function
-            try
-                T = asi_csRot(obj.cT(1),obj.cT(2),obj.cT(3));
-            catch
-                a = deg2rad(obj.cT(1));
-                b = deg2rad(obj.cT(2));
-                c = deg2rad(obj.cT(3));
-                
-                %% Transformation
-                T(1,1) = cos(c)*cos(a)-sin(c)*cos(b)*sin(a);
-                T(1,2) = cos(c)*sin(a)+sin(c)*cos(b)*cos(a);
-                T(1,2) = sin(c)*sin(b);
-                T(2,1) = -sin(c)*cos(a)-cos(c)*cos(b)*sin(a);
-                T(2,2) = -sin(c)*sin(a)+cos(c)*cos(b)*cos(a);
-                T(2,3) = cos(c)*sin(b);
-                T(3,1) = sin(b)*sin(a);
-                T(3,2) = -sin(b)*cos(a);
-                T(3,3) = cos(b);
-            end
-                T(abs(T)<10E-8) = 0;
+            T = obj.RT;    
+            T(abs(T)<10E-8) = 0;
         end
+        
+        function RP = getReferencePoints(obj)
+            % Return the Panel Reference Points in "new (strucutral)" coordinate System. 
+            % After applying the "RotationMatrix"
 
+            nrPanels = obj.wingProp.NC*obj.wingProp.NS;
+            if(obj.SYM)
+                RP = obj.panelProp.RP(nrPanels+1:end,:);
+            else
+                RP = obj.panelProp.RP(1:nrPanels,:);
+            end
+
+            for i = 1:length(RP)
+                RP(i,:) = (obj.RT*RP(i,:).').';
+            end
+
+        end
     end
 
     %% Private Methods
