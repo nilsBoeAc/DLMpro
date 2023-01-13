@@ -48,13 +48,13 @@ GSA = load('GSA.mat').GAK;
 %   x_struct = -x_aero
 %   y_struct =  y_aero
 %   z_struct = -z_aero
-% Thus, a rotation about the z-axis of 180 degree and then a 180 degree
-% rotation around the x'-axis is required -> see coordinate rotation
-CSChange = [180,180,0]; 
+%
+% CSChange = [180,180,0]; NOT LONGER SUPPORTED
+RT = [-1 0 0;0 1 0;0 0 -1];
 
 %% Object creation
 offset = [-0.625,0,0];
-dlm = DLMpro(span,chord,NS,NC,sweep,dihedral,taperRatio,offset,'CSChange',CSChange);
+dlm = DLMpro(span,chord,NS,NC,sweep,dihedral,taperRatio,offset,'RotationMatrix',RT);
 
 %% Calc AIC with given red. frequencies and mach numbers
 k = 0.1:0.1:1;     % reduced Frequency

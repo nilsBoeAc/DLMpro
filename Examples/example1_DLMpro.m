@@ -47,23 +47,23 @@ res1 = dlm.calcAIC(k,ma,'verbose',1);
 %% Adjust Method (Integration and Approximation)
 int = "Parabolic";
 app = "Watkins";
-res2 = dlm.calcAIC(k,ma,'Integration',int,'Approximation',app);
+res2 = dlm.calcAIC(k,ma,'Integration',int,'Approximation',app,'verbose',0);
 
 int = "Parabolic";
 app = "Desmarais";
-res3 = dlm.calcAIC(k,ma,'Integration',int,'Approximation',app);
+res3 = dlm.calcAIC(k,ma,'Integration',int,'Approximation',app,'verbose',0);
 
 int = "Quartic";
 app = "Laschka";
-res4 = dlm.calcAIC(k,ma,'Integration',int,'Approximation',app);
+res4 = dlm.calcAIC(k,ma,'Integration',int,'Approximation',app,'verbose',0);
 
 int = "Quartic";
 app = "Watkins";
-res5 = dlm.calcAIC(k,ma,'Integration',int,'Approximation',app);
+res5 = dlm.calcAIC(k,ma,'Integration',int,'Approximation',app,'verbose',0);
 
 int = "Quartic";
 app = "Desmarais";
-res6 = dlm.calcAIC(k,ma,'Integration',int,'Approximation',app);
+res6 = dlm.calcAIC(k,ma,'Integration',int,'Approximation',app,'verbose',1);
 
 
 %% Access results
