@@ -274,17 +274,20 @@ classdef DLMpro < handle
                         
             %% Calc Values
             tic
-            totalCases = length(machVect)+length(kVect);
-            disp("--- START Calculation of AIC ("+num2str(totalCases)+" k-Ma Pairs) ---");
+            disp("--- START Calculation of AIC ("+num2str(totalNumberCases)+" k-Ma Pairs) ---");
             disp("   --- Integration:   "+int);
             disp("   --- Approximation: "+app);
             pa = self.panelProp;
             combi = zeros(totalNumberCases,2);
             AIC = zeros(self.wingProp.NC*self.wingProp.NS,self.wingProp.NC*self.wingProp.NS,totalNumberCases);
             n = 0;
+            wtb = waitbar(0,'Status');          
             for ma = 1:length(machVect)
                 for ki=1:length(kVect)
                     n = n+1;
+                    text = "AIC Calculation Running: "+ num2str(n)+"/"+num2str(totalNumberCases);
+                    waitbar(n/totalNumberCases,wtb,text);
+                    
                     mach = machVect(ma);
                     kr = kVect(ki);
                     combi(n,1) = kr;
@@ -353,7 +356,8 @@ classdef DLMpro < handle
                     Qss(:,:,n) = gsa*QkkT*gsa.';
                 end
             end
-            
+
+            close(wtb);
             res.Nr              = length(self.resultArray)+1;
             res.kMList          = combi;
             res.Qss             = Qss;
