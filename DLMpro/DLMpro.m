@@ -272,99 +272,111 @@ classdef DLMpro < handle
                 Qkk = zeros(an,an,totalNumberCases);
             end
                         
+            n = 0;
+            for ma = 1:length(machVect)
+                for ki=1:length(kVect)
+                    n = n+1;
+                    Ma_K_Vect(n,:) = [machVect(ma),kVect(ki)];
+                end
+            end
+
             %% Calc Values
             tic
             disp("--- START Calculation of AIC ("+num2str(totalNumberCases)+" k-Ma Pairs) ---");
             disp("   --- Integration:   "+int);
             disp("   --- Approximation: "+app);
             pa = self.panelProp;
-            combi = zeros(totalNumberCases,2);
+%             combi = zeros(totalNumberCases,2);
             AIC = zeros(self.wingProp.NC*self.wingProp.NS,self.wingProp.NC*self.wingProp.NS,totalNumberCases);
-            n = 0;
-            wtb = waitbar(0,'Status');          
-            for ma = 1:length(machVect)
-                for ki=1:length(kVect)
-                    n = n+1;
-                    text = "AIC Calculation Running: "+ num2str(n)+"/"+num2str(totalNumberCases);
-                    waitbar(n/totalNumberCases,wtb,text);
-                    
-                    mach = machVect(ma);
-                    kr = kVect(ki);
-                    combi(n,1) = kr;
-                    combi(n,2) = mach;
-                    
-                    kred = kr*2/Ref_chord; %form of the reduced frequency used for the DLM
-                    D_vlm = VLM(pa,mach,dsp); %Get VLM downwash effect (steady state effect)
-                    D_dlm = DLM(pa,mach,kred,int,app,pkern,dsp); %Get DLM downwash effect (oscillatory effect)
+%             n = 0;
+%             wtb = waitbar(0,'Status');          
+            
+            parfor n = 1:length(Ma_K_Vect)
+%                 text = "AIC Calculation Running: "+ num2str(n)+"/"+num2str(totalNumberCases);
+%                 waitbar(n/totalNumberCases,wtb,text);
+                mach = Ma_K_Vect(n,1);
+                kr   = Ma_K_Vect(n,2);
+%                 combi(n,1) = kr;
+%                 combi(n,2) = mach;
 
-                    % combine VLM and DLM matrices
-                    D = -(D_vlm+D_dlm);
+                kred = kr*2/Ref_chord; %form of the reduced frequency used for the DLM
+                D_vlm = VLM(pa,mach,dsp); %Get VLM downwash effect (steady state effect)
+                D_dlm = DLM(pa,mach,kred,int,app,pkern,dsp); %Get DLM downwash effect (oscillatory effect)
 
-                    % concatenate results to one wing
-                    if self.SYM == 1
-                        NS_hw = self.wingProp.NS;
-                        NC = self.wingProp.NC;
-                        D_r = D(NS_hw*NC+1:end,NS_hw*NC+1:end);   % influence from right wing on itself
-                        D_lr = D(NS_hw*NC+1:end,1:NS_hw*NC);      % influence from left wing on right wing
-                        sub_D_lr = zeros(NS_hw*NC,NC,n);
-
-                        %sorting the influence matrix from left wing on
-                        %right wing so that it can easily summed up with
-                        %influnece from right wing on itself
-                        m=1;
-                        l = NS_hw;
-                        for k=1:NS_hw
-                            sub_D_lr(:,:,m) = D_lr(:,(k-1)*NC+1:k*NC);
-                            m = m+1;
-                        end
-                        
-                        for k=1:NS_hw
-                            new_D_lr(:,(k-1)*NC+1:k*NC) = sub_D_lr(:,:,l);
-                            l = l - 1;
-                        end
-                        
-                        D = D_r+new_D_lr;
-                    end
-                    AIC(:,:,n) = inv(D);
-
-                    %Calculate Derivation matrix W and Integration matrix B
-                    [W,B] = DerivationIntegrationMatrix(kr,Ref_chord,pa);
-                    if self.SYM == 1
-                        W = W(ndofAero/2+1:end,ndofAero+1:end);
-                        B = B(ndofAero+1:end,ndofAero/2+1:end);
-                    end
-
-                    W_total(:,:,n) = W;
-                    % Calc QKK and Qhh
-                    Qkk(:,:,n) = B*(D\W); % B*inv(D)*W;
-
-                    % create coordinate Transform matrix to account 
-                    % for different CS-Orientation in DLMpro(aero) and Struture
-
-                    T = [self.T_CS self.T_CS; self.T_CS self.T_CS];
-                    T([1,2,4,6],:) = [];
-                    T(:,[1,2,4,6]) = [];
-                    
-                    TR = zeros(size(gsa,2)/2);
-                    for i = 1:size(TR,1)
-                        s = 2*(i-1)+1;
-                        TR(s:s+1,s:s+1) = T;
-                        i=i+1;
-                    end
-
-                    QkkT = TR*Qkk(:,:,n)*TR;
-                    Qss(:,:,n) = gsa*QkkT*gsa.';
-                end
+                % combine VLM and DLM matrices
+                DT(:,:,n) = -(D_vlm+D_dlm);
             end
 
-            close(wtb);
+            for n = 1:length(Ma_K_Vect)
+                mach = Ma_K_Vect(n,1);
+                kr   = Ma_K_Vect(n,2);
+                D    = DT(:,:,n);
+
+                % concatenate results to one wing
+                if self.SYM == 1
+                    NS_hw = self.wingProp.NS;
+                    NC = self.wingProp.NC;
+                    D_r = D(NS_hw*NC+1:end,NS_hw*NC+1:end);   % influence from right wing on itself
+                    D_lr = D(NS_hw*NC+1:end,1:NS_hw*NC);      % influence from left wing on right wing
+                    sub_D_lr = zeros(NS_hw*NC,NC,n);
+
+                    %sorting the influence matrix from left wing on
+                    %right wing so that it can easily summed up with
+                    %influnece from right wing on itself
+                    m=1;
+                    l = NS_hw;
+                    for k=1:NS_hw
+                        sub_D_lr(:,:,m) = D_lr(:,(k-1)*NC+1:k*NC);
+                        m = m+1;
+                    end
+
+                    for k=1:NS_hw
+                        new_D_lr(:,(k-1)*NC+1:k*NC) = sub_D_lr(:,:,l);
+                        l = l - 1;
+                    end
+
+                    D = D_r+new_D_lr;
+                end
+                AIC(:,:,n) = inv(D);
+
+                %Calculate Derivation matrix W and Integration matrix B
+                [W,B] = DerivationIntegrationMatrix(kr,Ref_chord,pa);
+                if self.SYM == 1
+                    W = W(ndofAero/2+1:end,ndofAero+1:end);
+                    B = B(ndofAero+1:end,ndofAero/2+1:end);
+                end
+
+                W_total(:,:,n) = W;
+                % Calc QKK and Qhh
+                Qkk(:,:,n) = B*(D\W); % B*inv(D)*W;
+
+                % create coordinate Transform matrix to account
+                % for different CS-Orientation in DLMpro(aero) and Struture
+
+                T = [self.T_CS self.T_CS; self.T_CS self.T_CS];
+                T([1,2,4,6],:) = [];
+                T(:,[1,2,4,6]) = [];
+
+                TR = zeros(size(gsa,2)/2);
+                for i = 1:size(TR,1)
+                    s = 2*(i-1)+1;
+                    TR(s:s+1,s:s+1) = T;
+                    i=i+1;
+                end
+
+                QkkT = TR*Qkk(:,:,n)*TR;
+                Qss(:,:,n) = gsa*QkkT*gsa.';
+
+            end
+
+%             close(wtb);
             res.Nr              = length(self.resultArray)+1;
-            res.kMList          = combi;
+            res.kMList          = Ma_K_Vect;
             res.Qss             = Qss;
             res.Qkk             = Qkk;
             res.integration     = int;
             res.approximation   = app;
-            res.VLM             = D_vlm;
+%             res.VLM             = D_vlm;
             res.AIC             = AIC;
             res.GSA             = gsa;
             res.B               = B;
